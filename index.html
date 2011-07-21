@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Fusion Tables Layer Builder</title>
+    <link href="css/skeleton/base.css" rel="stylesheet" type="text/css" />
+    <link href="css/skeleton/skeleton.css" rel="stylesheet" type="text/css" />
+    <style>
+    #demo-map {
+        border: 1px #ddd solid;
+        height: 400px;
+        width: 100%;
+    }
+    </style>
+    
+    <script src="http://code.jquery.com/jquery-1.6.2.min.js"></script>
+    <script src="js/underscore-min.js"></script>
+    <script src="js/backbone-min.js"></script>
+    <script src="js/ft-builder.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Fusion Tables Layer builder</h1>
+
+        <div id="menu" class="eight columns">
+        <form id="builder">
+            
+            <fieldset id="layer-1" class="layer">
+                <h2>Add a layer</h2>
+                <div>
+                    <label for="table_id">Table ID:</label>
+                    <input type="text" id="table_id" name="table_id" />
+                </div>
+                <div>
+                    <label for="location_column">Location column</label>
+                        <select id="location_column" name="location_column">
+                            <option> --- select --- </option>
+                        </select>
+                </div>
+                <div>
+                    <label for="where">Filter (WHERE)</label>
+                    <input type="text" id="where" name="where" />
+                </div>
+                <input type="hidden" name="layer-id" value="1" />
+                <input type="button" class="update-map" value="Update Map" />
+                <input type="button" class="new-layer" value="Add another layer">
+            </fieldset>
+            
+            <fieldset id="map-options">
+                <h2>Edit Map</h2>
+                <div>
+                    <label for="dimensions">Dimensions (px)</label>
+                    Width: <input type="text" id="map-width" name="map-width" />
+                    Height: <input type="text" id="map-height" name="map-height" />
+                </div>
+                <div>
+                    <label for="map-center">Map center</label>
+                    <input type="text" id="map-center" name="map-center">
+                </div>
+                <div>
+                    <label for="map-zoom">Zoom</label>
+                    <input type="text" id="map-zoom" name="map-zoom">
+                </div>
+                <input type="button" class="update-map" value="Update Map" />
+            </fieldset>
+        </form>
+        </div>
+        <div id="map-wrapper" class="eight columns">
+            <div id="demo-map"></div>
+        </div>
+    </div>
+</body>
+</html>
