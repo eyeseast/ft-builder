@@ -24,10 +24,11 @@
 
         <div id="menu" class="six columns">
         <form id="builder">
-            
+        <div id="ft-builder">
             <fieldset id="layers">
                 <h2>Add a layer</h2>
-                <div id="layer-1" class="layer">
+                <!--
+                <div class="layer">
                     <div>
                         <label for="table_id">Table ID:</label>
                         <input type="text" class="table_id" name="table_id" />
@@ -42,11 +43,12 @@
                         <label for="where">Filter (WHERE)</label>
                         <input type="text" class="where" name="where" />
                     </div>
-                </div>
                 <input type="hidden" name="layer-id" value="1" />
-                <input type="button" class="update-map" value="Update Map" />
-                <input type="button" class="new-layer" value="Add another layer">
+                </div>
+                -->
             </fieldset>
+            <input type="button" class="update-map" value="Update Map" />
+            <input type="button" class="new-layer" value="Add another layer">
             
             <fieldset id="map-options">
                 <h2>Edit Map</h2>
@@ -71,5 +73,23 @@
             <div id="demo-map"></div>
         </div>
     </div>
+    <script type="x-javascript-template" id="layer-template">
+    <div>
+        <label for="table_id">Table ID:</label>
+        <input type="text" class="table_id" name="table_id" />
+    </div>
+    <div>
+        <label for="location_column">Location column</label>
+            <select class="location_column" name="location_column">
+                <option> --- select --- </option>
+            </select>
+    </div>
+    <div>
+        <label for="where">Filter (WHERE)</label>
+        <input type="text" class="where" name="where" value="<%= filter %>" />
+    </div>
+    <p><a href="#" class="delete">X</a></p>
+    <input type="hidden" name="layer-id" value="" />
+    </script>
 </body>
 </html>
