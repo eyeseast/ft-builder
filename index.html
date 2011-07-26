@@ -22,24 +22,26 @@
     <div class="container">
         <h1>Fusion Tables Layer builder</h1>
 
-        <div id="menu" class="eight columns">
+        <div id="menu" class="six columns">
         <form id="builder">
             
-            <fieldset id="layer-1" class="layer">
+            <fieldset id="layers">
                 <h2>Add a layer</h2>
-                <div>
-                    <label for="table_id">Table ID:</label>
-                    <input type="text" id="table_id" name="table_id" />
-                </div>
-                <div>
-                    <label for="location_column">Location column</label>
-                        <select id="location_column" name="location_column">
-                            <option> --- select --- </option>
-                        </select>
-                </div>
-                <div>
-                    <label for="where">Filter (WHERE)</label>
-                    <input type="text" id="where" name="where" />
+                <div id="layer-1" class="layer">
+                    <div>
+                        <label for="table_id">Table ID:</label>
+                        <input type="text" class="table_id" name="table_id" />
+                    </div>
+                    <div>
+                        <label for="location_column">Location column</label>
+                            <select class="location_column" name="location_column">
+                                <option> --- select --- </option>
+                            </select>
+                    </div>
+                    <div>
+                        <label for="where">Filter (WHERE)</label>
+                        <input type="text" class="where" name="where" />
+                    </div>
                 </div>
                 <input type="hidden" name="layer-id" value="1" />
                 <input type="button" class="update-map" value="Update Map" />
@@ -65,7 +67,7 @@
             </fieldset>
         </form>
         </div>
-        <div id="map-wrapper" class="eight columns">
+        <div id="map-wrapper" class="ten columns">
             <div id="demo-map"></div>
         </div>
     </div>
