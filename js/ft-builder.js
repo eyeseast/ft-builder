@@ -53,7 +53,10 @@ var MapOptions = Backbone.Model.extend({
         width: 600,
         zoom: 6,
         center: "0,0"
-    }
+    },
+    
+    fieldnames: ['height', 'width', 'center', 'zoom']
+    
 });
 
 /***
@@ -68,11 +71,7 @@ var LayerCollection = Backbone.Collection.extend({
     
     complete: function() {
         return this.filter(function(layer) {
-            if ( layer.get('table_id') && layer.get('location_column') ) {
-                return true;
-            } else {
-                return false;
-            };
+            return (layer.has('table_id') && layer.has('location_column'));
         });
     }
 });
@@ -150,10 +149,6 @@ var LayerView = Backbone.View.extend({
     
 });
 
-var MapView = Backbone.View.extend({
-    
-});
-
 window.AppView = Backbone.View.extend({
     
     el: $('#ft-builder'),
@@ -195,10 +190,8 @@ window.AppView = Backbone.View.extend({
     },
     
     render: function() {
-        var fieldnames = ['height', 'width', 'center', 'zoom'];
-        
-        for (var index in fieldnames) {
-            var field = fieldnames[index];
+        for (var index in this.options.fieldnames) {
+            var field = this.options.fieldnames[index];
             var value = this.options.get(field);
             $('input#map-' + field).val(value);
         };
@@ -208,12 +201,24 @@ window.AppView = Backbone.View.extend({
     
     render_map: function() {
         $('#map_embed').remove();
-        var script = this.make('script', {id: '#map-embed'});
-        $(script).html( this.jsTemplate({
-            options: this.options.toJSON(),
-            layers: layers.complete()
-        }));
+        var script = $('<script/>')
+            .attr('id', '#map-embed')
+            .html( this.jsTemplate({
+                options: this.options.toJSON(),
+                layers: layers.complete()
+            }));
         $('body').append(script);
+        return this;
+    },
+    
+    updateOptions: function(options) {
+        var changes = {};
+        for (var index in this.options.fieldnames) {
+            var field = fieldnames[index];
+            var value = $('input#map-' + field).val();
+            changes[field] = value;
+        };
+        this.options.set(changes);
         return this;
     }
     
