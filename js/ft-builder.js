@@ -45,6 +45,16 @@ var FTLayer = Backbone.Model.extend({
     }
 })
 
+// a singleton to hold map options
+var MapOptions = Backbone.Model.extend({
+    
+    defaults: {
+        height: 400,
+        width: 600,
+        zoom: 6,
+        center: "0,0"
+    }
+});
 
 /***
 Collections
@@ -58,7 +68,11 @@ var LayerCollection = Backbone.Collection.extend({
     
     complete: function() {
         return this.filter(function(layer) {
-            !!(layer.get('table_id') && layer.get('filter'));
+            if ( layer.get('table_id') && layer.get('location_column') ) {
+                return true;
+            } else {
+                return false;
+            };
         });
     }
 });
@@ -71,17 +85,18 @@ Views
 
 var LayerView = Backbone.View.extend({
     
-    className: ".layer",
+    className: "layer",
     
     events: {
-        'change input.table_id': 'setColumns',
+        'change input.table_id': 'getColumns',
+        'change select.location_column': 'setGeoColumn',
         'click a.delete'       : 'remove'
     },
     
     template: _.template( $('#layer-template').html() ),
     
     initialize: function(options) {
-        _.bindAll(this, 'render', 'remove', 'setColumns');
+        _.bindAll(this);
         
         this.model.view = this;
         this.render();
@@ -99,7 +114,7 @@ var LayerView = Backbone.View.extend({
         return this;
     },
     
-    setColumns: function() {
+    getColumns: function() {
         var that = this;
         var table_id = this.$('input.table_id').val();
         if (!table_id) return;
@@ -125,6 +140,14 @@ var LayerView = Backbone.View.extend({
         return this;
     },
     
+    setGeoColumn: function(e) {
+        var column = this.$('select.location_column').val();
+        if (column) this.model.set({location_column: column});
+        
+        // return this regardless
+        return this;
+    }
+    
 });
 
 var MapView = Backbone.View.extend({
@@ -136,11 +159,14 @@ window.AppView = Backbone.View.extend({
     el: $('#ft-builder'),
     
     events: {
-        'click input.new-layer': 'createLayer'
+        'click input.new-layer': 'createLayer',
+        'click input.update-map': 'render_map'
     },
     
+    jsTemplate: _.template( $('#map-embed-template').html() ),
+    
     initialize: function(options) {
-        _.bindAll(this, 'addLayer', 'render');
+        _.bindAll(this);
         layers.bind('add', this.addLayer);
         
         if (!layers.length) {
@@ -148,6 +174,8 @@ window.AppView = Backbone.View.extend({
             layers.add(layer);
         }
         
+        this.options = new MapOptions(options);
+        this.render();
         return this;
     },
     
@@ -166,10 +194,36 @@ window.AppView = Backbone.View.extend({
         return layer;
     },
     
-    render: function() {}
+    render: function() {
+        var fieldnames = ['height', 'width', 'center', 'zoom'];
+        
+        for (var index in fieldnames) {
+            var field = fieldnames[index];
+            var value = this.options.get(field);
+            $('input#map-' + field).val(value);
+        };
+        
+        return this;
+    },
+    
+    render_map: function() {
+        $('#map_embed').remove();
+        var script = this.make('script', {id: '#map-embed'});
+        $(script).html( this.jsTemplate({
+            options: this.options.toJSON(),
+            layers: layers.complete()
+        }));
+        $('body').append(script);
+        return this;
+    }
     
 });
 
-window.ft_builder = new AppView;
+window.ft_builder = new AppView({
+    height: $('#map_canvas').height(),
+    width: $('#map_canvas').width(),
+    zoom: 7,
+    center: "41.095777,-77.579046"
+});
 
 });
