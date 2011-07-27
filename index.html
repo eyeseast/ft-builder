@@ -83,11 +83,11 @@
     
     <script type="x-javacript-template" id="map-embed-template">
     jQuery('#map_canvas').css({
-        height: <%= options.height %>,
-        width: <%= options.width %>
+        height: "<%= options.height %>",
+        width: "<%= options.width %>"
     });
     
-    var map = new google.maps.Map(document.getElementById('map_canvas'), {
+    window.ft_map = new google.maps.Map(document.getElementById('map_canvas'), {
         center: new google.maps.LatLng(<%= options.center %>),
         zoom: <%= options.zoom %>,
         mapTypeId: google.maps.MapTypeId.ROADMAP
@@ -102,13 +102,13 @@
             }
         });
     
-        newlayer.setMap(map);
+        newlayer.setMap(ft_map);
     <% } %>
     </script>
     
     <script id="map_embed">
     var center = new google.maps.LatLng(41.09577724339462, -77.57904618437499);
-    var map = new google.maps.Map(document.getElementById('map_canvas'), {
+    window.ft_map = new google.maps.Map(document.getElementById('map_canvas'), {
         center: center,
         zoom: 7,
         mapTypeId: google.maps.MapTypeId.ROADMAP

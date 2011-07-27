@@ -178,11 +178,23 @@ window.AppView = Backbone.View.extend({
         
         this.options = new MapOptions(options);
         this.render();
+        this.mapEvents();
         return this;
     },
     
     mapEvents: function() {
+        var map = window.ft_map;
+        var that = this;
         
+        google.maps.event.addListener(map, 'zoom_changed', function() {
+            that.$('#map-zoom').val(map.getZoom());
+        });
+        
+        google.maps.event.addListener(map, 'center_changed', function() {
+            that.$('#map-center').val(map.getCenter().toUrlValue());
+        });
+        
+        return this;
     },
     
     // hook for when layers are added to a the layers collection
@@ -221,6 +233,9 @@ window.AppView = Backbone.View.extend({
             }));
         $('body').append(script);
         $('#js_code > textarea').html( script.html() );
+        
+        // map events need to be reset since we killed the old map
+        this.mapEvents();
         return this;
     },
     
