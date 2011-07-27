@@ -31,7 +31,7 @@ Models
 Stores basic data about a Fusion Table:
 
  - table_id
- - location_column
+ - geometry_column
  - filter
 
 ***/
@@ -40,7 +40,7 @@ var FTLayer = Backbone.Model.extend({
     
     defaults: {
         table_id: null,
-        location_column: null,
+        geometry_column: null,
         filter: null
     }
 })
@@ -71,7 +71,7 @@ var LayerCollection = Backbone.Collection.extend({
     
     complete: function() {
         return this.filter(function(layer) {
-            return (layer.has('table_id') && layer.has('location_column'));
+            return (layer.has('table_id') && layer.has('geometry_column'));
         });
     }
 });
@@ -87,9 +87,10 @@ var LayerView = Backbone.View.extend({
     className: "layer",
     
     events: {
-        'change input.table_id': 'getColumns',
-        'change select.location_column': 'setGeoColumn',
-        'click a.delete'       : 'remove'
+        'change input.table_id'         : 'getColumns',
+        'change select.geometry_column' : 'setGeoColumn',
+        'change input.where'            : 'setFilter',
+        'click a.delete'                : 'remove'
     },
     
     template: _.template( $('#layer-template').html() ),
@@ -121,7 +122,7 @@ var LayerView = Backbone.View.extend({
         var sql = "SELECT * FROM " + table_id + " LIMIT 1";
         query(sql, function(resp) {
             var columns = resp.table.cols;
-            var select = that.$('select.location_column');
+            var select = that.$('select.geometry_column');
             select.empty();
             for (var key in columns) {
                 var column = columns[key];
@@ -140,10 +141,16 @@ var LayerView = Backbone.View.extend({
     },
     
     setGeoColumn: function(e) {
-        var column = this.$('select.location_column').val();
-        if (column) this.model.set({location_column: column});
+        var column = this.$('select.geometry_column').val();
+        if (column) this.model.set({geometry_column: column});
         
         // return this regardless
+        return this;
+    },
+    
+    setFilter: function(e) {
+        var where = this.$('input.where').val();
+        if (where) this.model.set({filter: where});
         return this;
     }
     
@@ -174,6 +181,10 @@ window.AppView = Backbone.View.extend({
         return this;
     },
     
+    mapEvents: function() {
+        
+    },
+    
     // hook for when layers are added to a the layers collection
     // by user click or refresh
     addLayer: function(layer) {
@@ -200,6 +211,7 @@ window.AppView = Backbone.View.extend({
     },
     
     render_map: function() {
+        this.updateOptions();
         $('#map_embed').remove();
         var script = $('<script/>')
             .attr('id', '#map-embed')
@@ -208,13 +220,14 @@ window.AppView = Backbone.View.extend({
                 layers: layers.complete()
             }));
         $('body').append(script);
+        $('#js_code > textarea').html( script.html() );
         return this;
     },
     
     updateOptions: function(options) {
         var changes = {};
         for (var index in this.options.fieldnames) {
-            var field = fieldnames[index];
+            var field = this.options.fieldnames[index];
             var value = $('input#map-' + field).val();
             changes[field] = value;
         };
